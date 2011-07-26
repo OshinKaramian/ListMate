@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'sinatra'
 require 'mongoid'
-require 'models/user'
-require 'models/bookmark'
+require 'digest'
+Dir["models/*.rb"].each {|file| require file }
 
 # Include as init
 configure do
@@ -13,13 +13,11 @@ configure do
   end
 end
 
-# Include as routes
-
 # Log user in and passes back a user object with a token that can be used at a later time
 get '/user' do
 	username = params[:username]
-	password = params[:password]
-
+	password = Digest::SHA2.hexdigest(params[:password])
+	
 	user = User.where({ :name => username, 
 						:password => password })
 
