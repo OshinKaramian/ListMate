@@ -16,15 +16,15 @@ end
 # Log user in and passes back a user object with a token that can be used at a later time
 get '/user' do
 	username = params[:username]
+	password = params[:password]
 	password = Digest::SHA2.hexdigest(params[:password])
-	
-	user = User.where({ :name => username, 
-						:password => password })
+
+	user = User.first(:conditions => {:name => username, :password => password})
 
 	if user
 		user.to_json
 	else
-		error 404, {:error => "user not found"}.to_json 
+		error 404, {:error => "User Does Not Exist Or Password is Incorrect"}.to_json 
 	end
 end
 
@@ -44,6 +44,21 @@ post '/user' do
 	  rescue => e
 		error 400, e.message.to_json
 	  end
+end
+
+delete '/user' do
+	begin
+		token = params[:user_id]
+		user = User.first(:conditions => { :_id => token })
+
+		if user.delete
+			{ :status => "success" }.to_json
+		else
+			user.errors.to_json
+		end
+	rescue => e
+		error 400, e.message.to_json
+	end
 end
 
 # Create a new user Bookmark
