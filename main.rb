@@ -94,11 +94,11 @@ get '/bookmark' do
 end
 
 # Delete this user bookmark
-delete '/bookmark/:url' do
+delete '/bookmark' do
 	begin
-		bookmark_url = params[:url]
+		bookmark_id = params[:id]
 		token = params[:user_id]
-		bookmark = Bookmark.where({:url => bookmark_url, :user_id => token })
+		bookmark = Bookmark.where({:_id => bookmark_id, :user_id => token })
 		if bookmark.delete
 			{ :status => "success" }.to_json
 		else
