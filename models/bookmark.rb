@@ -3,11 +3,11 @@ require 'rubygems'
 require 'mongoid'
 
 class Bookmark
-	include Mongoid::Document
-	
-	store_in :bookmarks
+  include Mongoid::Document
 
-	field :user_id, :type => String
-	field :name, :type => String
-	field :url, :type => String
+  store_in :bookmarks
+
+  field :user_id, :type => String
+  field :name, :type => String
+  field :url, :type => String
 end
