@@ -13,16 +13,28 @@ configure do
   end
 end
 
+get '/' do
+  send_file File.join('public', 'index.html')
+end
+
 # Log user in and passes back a user object with a token that can be used at a later time
 get '/user' do
-  username = params[:username]
-  password = params[:password]
-  password = Digest::SHA2.hexdigest(params[:password])
+  content_type :json
+  token = params[:token]
+  user = nil
 
-  user = User.first(:conditions => {:name => username, :password => password})
+  if !token.nil?
+    user = User.find(token)
+  else
+    username = params[:username]
+    password = params[:password]
+    password = Digest::SHA2.hexdigest(params[:password])
+
+    user = User.first(:conditions => {:name => username, :password => password})
+  end
 
   if user
-    user.to_json
+    return user.to_json
   else
     error 404, {:error => "User Does Not Exist Or Password is Incorrect"}.to_json 
   end
@@ -31,13 +43,14 @@ end
 # Create a new user
 post '/user' do
   begin
+    content_type :json
     username = params[:username]
     password = params[:password]
 
     user = User.new(:name => username, 
                     :password => password )
     if user.save
-      user.to_json 
+      return user.to_json 
     else
       error 400, user.errors.to_json
     end

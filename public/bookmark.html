@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+		<script type="text/javascript" src="scripts/services/user.services.js"></script>
+		<script type="text/javascript" src="scripts/services/bookmark.services.js"></script>
+		<script type="text/javascript" src="scripts/libraries/handlebars.1.0.0.beta.3.js"></script>
+		<script type="text/javascript">
+			function getQuerystring(key, default_) {
+				if (default_==null) { 
+					default_=""; 
+				}
+				key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+				var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+				var qs = regex.exec(window.location.href);
+				if(qs == null) {
+					return default_;
+				}
+				else {
+					return qs[1];
+				}
+			}
+			var user_token = getQuerystring("token");
+			var user = new User(user_token);
+			var bookmarks = new Bookmark(user);
+			bookmarks.get_all(function(data){ 
+				data = '{"bookmarks":' + data + '}';
+				var source ="<ul>{{#bookmarks}}" + 
+								"<li>{{name}} - {{url}}</li>"+ 
+							"{{/bookmarks}}</ul>";
+
+				var template = Handlebars.compile(source);
+
+				var result = template($.parseJSON(data));
+				$(".main").append(result);
+			});
+
+			$(document).ready(function(){
+				$(".add_bookmark :button").click(function(){
+					alert("poop");
+					var url = $(".url :text").val();
+					var name = $(".name :text").val();
+					bookmarks.create(url, name);
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="add_bookmark">
+			Add a New Bookmark:
+			<div class="url">Url: <input type="text" /></div>
+			<div class="name">Name: <input type="text" /></div>
+			<input type="button" class="submit" value="Add Bookmark" />
+		</div>
+		<div class="main">
+		</div>
+	</body>
+</html>
