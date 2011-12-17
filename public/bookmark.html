@@ -6,24 +6,12 @@
 		<script type="text/javascript" src="scripts/services/user.services.js"></script>
 		<script type="text/javascript" src="scripts/services/bookmark.services.js"></script>
 		<script type="text/javascript" src="scripts/libraries/handlebars.1.0.0.beta.3.js"></script>
+		<script type="text/javascript" src="scripts/libraries/html.toolbelt.js"></script>
 		<script type="text/javascript">
-			function getQuerystring(key, default_) {
-				if (default_==null) { 
-					default_=""; 
-				}
-				key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-				var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
-				var qs = regex.exec(window.location.href);
-				if(qs == null) {
-					return default_;
-				}
-				else {
-					return qs[1];
-				}
-			}
-			var user_token = getQuerystring("token");
+			var user_token = new Html_Toolbelt().getQuerystring("token");
 			var user = new User(user_token);
 			var bookmarks = new Bookmark(user);
+
 			bookmarks.get_all(function(data){ 
 				data = '{"bookmarks":' + data + '}';
 				var source ="<ul>{{#bookmarks}}" + 
